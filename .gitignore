@@ -1,0 +1,27 @@
+# Python byte-compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# Virtual environments
+venv/
+env/
+.env
+
+# Large model weights (2.1GB - upload to Hugging Face or GitHub Releases)
+bartpho_final_model/model.safetensors
+bartpho_final_model/training_args.bin
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.onnx
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
