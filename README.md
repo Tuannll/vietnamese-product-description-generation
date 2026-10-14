@@ -7,6 +7,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)](https://pytorch.org/)
 [![Transformers](https://img.shields.io/badge/HuggingFace-Transformers-FFD21E?style=flat-square&logo=huggingface&logoColor=black)](https://huggingface.co/)
+[![HuggingFace Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model%20Hub-FFD21E?style=flat-square)](https://huggingface.co/AnhNguyen195/bartpho-product-description)
 [![CI](https://img.shields.io/github/actions/workflow/status/Tuannll/vietnamese-product-description-generation/ci.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI)](https://github.com/Tuannll/vietnamese-product-description-generation/actions)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
 
@@ -110,18 +111,23 @@ Thực nghiệm đo lường trên 619 mẫu độc lập thuộc tập `val_cle
 ---
 
 <a id="tai-nguyen"></a>
-## 📦 Trọng số mô hình & Tải Checkpoint
+## 📦 Trọng số mô hình trên Hugging Face Hub
 
-Thư mục `bartpho_final_model/` lưu trữ cấu hình tokenizer, từ điển và siêu tham số fine-tune. File trọng số nhị phân `model.safetensors` nặng **2.1 GB** được phát hành tại GitHub Releases / Hugging Face:
+File trọng số nhị phân `model.safetensors` (**2.1 GB**) cùng toàn bộ tokenizer, cấu hình siêu tham số fine-tune được lưu trữ chính thức tại Hugging Face Model Hub:
 
-| Tài nguyên | Định dạng | Dung lượng | Vị trí lưu | Tải về |
+* **Model Hub**: [🤗 `AnhNguyen195/bartpho-product-description`](https://huggingface.co/AnhNguyen195/bartpho-product-description)
+* **Kiến trúc gốc**: `vinai/bartpho-syllable`
+* **Định dạng trọng số**: Safetensors (Zero-code execution security)
+
+| Tài nguyên | Định dạng | Dung lượng | Nguồn lưu trữ | Link truy cập |
 | :--- | :---: | :---: | :--- | :---: |
-| **`model.safetensors`** | Safetensors | 2.1 GB | `bartpho_final_model/model.safetensors` | [Tải từ Release](https://github.com/Tuannll/vietnamese-product-description-generation/releases/tag/v1.0.0) |
+| **BARTpho Product Description** | Safetensors | 2.1 GB | Hugging Face Hub | [🤗 HuggingFace Model](https://huggingface.co/AnhNguyen195/bartpho-product-description) |
 
 > [!TIP]
-> Tải nhanh checkpoint qua GitHub CLI:
+> Bạn có thể tải checkpoint về máy cục bộ qua Hugging Face CLI:
 > ```bash
-> gh release download v1.0.0 -p "model.safetensors" -D bartpho_final_model/
+> pip install -U "huggingface_hub[cli]"
+> huggingface-cli download AnhNguyen195/bartpho-product-description --local-dir bartpho_final_model
 > ```
 
 ---
@@ -149,13 +155,19 @@ python evaluate_metrics.py --benchmark
 ```
 
 ### 3. Suy luận mô tả sản phẩm (Python Inference)
+Hệ thống hỗ trợ tải trực tiếp trọng số từ Hugging Face Hub (tự động cache) hoặc từ thư mục local:
+
 ```python
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-# Đường dẫn tới thư mục checkpoint sau khi tải trọng số
-model_path = "./bartpho_final_model"
-tokenizer = AutoTokenizer.from_pretrained(model_path)
-model = AutoModelForSeq2SeqLM.from_pretrained(model_path)
+# Cách 1: Tải trực tiếp từ Hugging Face Hub
+model_name = "AnhNguyen195/bartpho-product-description"
+
+# Cách 2: Hoặc dùng đường dẫn cục bộ nếu đã tải về
+# model_name = "./bartpho_final_model"
+
+tokenizer = AutoTokenizer.from_pretrained(model_name)
+model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
 
 input_text = "Sản phẩm: Laptop ASUS Zenbook 14 OLED UX3405 - Giá: 28.990.000"
 inputs = tokenizer(input_text, return_tensors="pt")
