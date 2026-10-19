@@ -2,48 +2,50 @@
 
 # 🛍️ Vietnamese Product Description Generation
 
-**Hệ thống sinh mô tả sản phẩm thương mại điện tử tiếng Việt tự động kết hợp kiến trúc Seq2Seq (ViT5, BARTpho) và Causal LLM (Qwen2-1.5B) với cơ chế Hybrid chống ảo giác (Zero Hallucination).**
+**Automated e-commerce product description generation system integrating Seq2Seq (ViT5, BARTpho) and Causal LLMs (Qwen2-1.5B) via a Two-Stage Hybrid Pipeline for Zero Hallucination.**
 
-[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
-[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Transformers](https://img.shields.io/badge/HuggingFace-Transformers-FFD21E?style=flat-square&logo=huggingface&logoColor=black)](https://huggingface.co/)
-[![HuggingFace Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model%20Hub-FFD21E?style=flat-square)](https://huggingface.co/AnhNguyen195/bartpho-product-description)
-[![CI](https://img.shields.io/github/actions/workflow/status/Tuannll/vietnamese-product-description-generation/ci.yml?branch=main&style=flat-square&logo=githubactions&logoColor=white&label=CI)](https://github.com/Tuannll/vietnamese-product-description-generation/actions)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB?logo=python&logoColor=white)](https://www.python.org/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.x-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
+[![Transformers](https://img.shields.io/badge/HuggingFace-Transformers-FFD21E?logo=huggingface&logoColor=black)](https://huggingface.co/)
+[![HuggingFace Model](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Model%20Hub-FFD21E)](https://huggingface.co/AnhNguyen195/bartpho-product-description)
+[![CI](https://img.shields.io/github/actions/workflow/status/Tuannll/vietnamese-product-description-generation/ci.yml?branch=main&logo=githubactions&logoColor=white&label=CI)](https://github.com/Tuannll/vietnamese-product-description-generation/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**[Tổng quan](#tong-quan) • [Kiến trúc Hybrid](#kien-truc) • [Benchmark](#dinh-luong) • [Case Studies](#case-studies) • [Cài đặt & Suy luận](#cai-dat)**
+**English** | [Tiếng Việt](README.vi.md)
+
+**[📌 Context & Objectives](#overview) • [🏗️ Hybrid Pipeline](#architecture) • [📈 Benchmark](#benchmark) • [🔍 Case Studies](#case-studies) • [🚀 Quick Start](#quick-start)**
 
 </div>
 
 ---
 
-<a id="tong-quan"></a>
-## 📌 Bối cảnh & Mục tiêu bài toán
+<a id="overview"></a>
+## 📌 Context & Objectives
 
-Trong các sàn thương mại điện tử (Shopee, Tiki, Lazada, Thế Giới Di Động), hàng ngàn sản phẩm công nghệ mới được cập nhật liên tục mỗi ngày. Việc viết bài mô tả sản phẩm (Product Description Generation) thủ công tốn kém nhân lực, thời gian và dễ xảy ra tình trạng thiếu nhất quán về thông số kỹ thuật.
+In modern e-commerce platforms (Shopee, Tiki, Lazada), thousands of new technology products are listed daily. Manually drafting compelling product descriptions is resource-intensive, slow, and prone to technical specification errors.
 
-### Giải pháp dự án:
-* **Đầu vào**: Chuỗi thông tin sản phẩm dạng bán cấu trúc (`Tên sản phẩm`, `Cấu hình kỹ thuật`, `Giá bán`).
-* **Đầu ra**: Đoạn văn mô tả sản phẩm tiếng Việt chuẩn ngữ pháp, lôi cuốn, đúng 100% thông số kỹ thuật.
-* **Đóng góp cốt lõi**:
-  1. Fine-tune và đánh giá so sánh chuyên sâu giữa hai dòng mô hình Seq2Seq tiếng Việt (`VietAI/vit5-base`, `vinai/bartpho-syllable`) và Causal LLM (`Qwen/Qwen2-1.5B-Instruct`).
-  2. Đề xuất kiến trúc **Hybrid Pipeline (Seq2Seq Drafting + LLM Polishing)** triệt tiêu hoàn toàn lỗi bịa đặt thông số (Hallucination) mà vẫn duy trì văn phong tiếp thị phong phú.
-  3. Xây dựng bộ công cụ đo lường độc lập chuẩn NLP: **ROUGE-1, ROUGE-2, ROUGE-L, BLEU-4** và độ trễ suy luận.
+### Project Solution:
+* **Input**: Semi-structured product metadata strings (`Product Name`, `Technical Specifications`, `Price`).
+* **Output**: Grammatically natural, engaging Vietnamese product copy maintaining 100% specification fidelity.
+* **Core Contributions**:
+  1. Fine-tuned and comprehensively evaluated Vietnamese Seq2Seq architectures (`VietAI/vit5-base`, `vinai/bartpho-syllable`) against Causal LLMs (`Qwen/Qwen2-1.5B-Instruct`).
+  2. Proposed a **Two-Stage Hybrid Pipeline (Seq2Seq Drafting + LLM Polishing)** eliminating factual hallucinations while preserving rich marketing rhetoric.
+  3. Established independent standard NLP benchmark evaluation: **ROUGE-1, ROUGE-2, ROUGE-L, BLEU-4**, and inference latency.
 
 ---
 
 <a id="dataset"></a>
-## 📊 Thống kê tập dữ liệu (Dataset Overview)
+## 📊 Dataset Overview
 
-Tập dữ liệu gồm **6,168 mẫu** thu thập từ các hệ thống bán lẻ công nghệ tại Việt Nam, đã qua pipeline làm sạch sâu và chuẩn hóa định dạng.
+The dataset contains **6,168 verified pairs** gathered from Vietnamese consumer electronics retailers, processed through extensive cleaning pipelines.
 
-| Thuộc tính | Tập Huấn luyện (`train_clean.csv`) | Tập Kiểm định (`val_clean.csv`) | Toàn bộ Dataset |
+| Attribute | Training Split (`train_clean.csv`) | Validation Split (`val_clean.csv`) | Total Dataset |
 | :--- | :---: | :---: | :---: |
-| **Số lượng mẫu** | 5,549 dòng | 619 dòng | 6,168 dòng |
-| **Tỷ lệ phân chia** | 90% | 10% | 100% |
-| **Độ dài trung bình Input** | 22.4 từ | 22.1 từ | 22.3 từ |
-| **Độ dài trung bình Output** | 48.6 từ | 48.2 từ | 48.5 từ |
-| **Ngành hàng chính** | Laptop, PC Gaming, VGA, Màn hình, Thiết bị mạng, Phụ kiện |
+| **Sample Count** | 5,549 rows | 619 rows | 6,168 rows |
+| **Split Ratio** | 90% | 10% | 100% |
+| **Average Input Length** | 22.4 tokens | 22.1 tokens | 22.3 tokens |
+| **Average Output Length** | 48.6 tokens | 48.2 tokens | 48.5 tokens |
+| **Primary Categories** | Laptops, Gaming PCs, Graphics Cards, Monitors, Networking, Accessories |
 
 ```text
 [Input Sample]
@@ -55,76 +57,72 @@ Card màn hình MSI RTX 5070 12G SHADOW 3X OC là lựa chọn lý tưởng dàn
 
 ---
 
-<a id="kien-truc"></a>
-## 🏗️ Kiến trúc giải pháp: Two-Stage Hybrid Pipeline
+<a id="architecture"></a>
+## 🏗️ Two-Stage Hybrid Pipeline
 
-```
-[Thông tin cấu hình & Giá bán thô]
+```text
+[Raw Specifications & Price Metadata]
                │
                ▼
 ┌──────────────────────────────────────────────┐
 │  Stage 1: Seq2Seq Drafting (ViT5 / BARTpho)  │
-│  Lọc thông số, tóm tắt chuẩn xác 100%        │
+│  Extracts features, ensures 100% accuracy    │
 └──────────────────────────────────────────────┘
                │
-               ▼ [Bản nháp thông số kỹ thuật - Zero Hallucination]
+               ▼ [Specification Draft - Zero Hallucination]
 ┌──────────────────────────────────────────────┐
 │  Stage 2: LLM Polishing (Qwen2-1.5B-Instruct)│
-│  Trau chuốt câu từ, nâng cao văn phong bán   │
+│  Enriches persuasive marketing rhetoric      │
 └──────────────────────────────────────────────┘
                │
                ▼
-[Mô tả sản phẩm hoàn chỉnh: Chuẩn xác thông số + Hấp dẫn khách hàng]
+[Final Product Copy: 100% Factually Accurate + High Conversion Copy]
 ```
 
-* **Giai đoạn 1 (Drafting)**: Mô hình Seq2Seq đã fine-tune tiếp nhận dữ liệu cấu hình thô, trích chọn các thuộc tính cốt lõi và sinh bản nháp ngắn gọn.
-* **Giai đoạn 2 (Polishing)**: Mô hình Causal LLM đóng vai trò biên tập viên tiếp thị, diễn đạt lại bản nháp mượt mà theo cấu trúc kêu gọi hành động (Call to Action), bị chặn tuyệt đối việc tự ý thêm các thông số kỹ thuật mới ngoài bản nháp.
+* **Stage 1 (Drafting)**: Fine-tuned Seq2Seq model consumes semi-structured specifications, extracts core attributes, and generates a concise, grounded draft.
+* **Stage 2 (Polishing)**: The Causal LLM serves as a copy editor, refining sentence flow and incorporating Call-to-Action phrases while strictly constrained against introducing foreign specifications.
 
 ---
 
-<a id="dinh-luong"></a>
-## 📈 Kết quả đánh giá định lượng (Quantitative Evaluation)
+<a id="benchmark"></a>
+## 📈 Quantitative Evaluation
 
-Thực nghiệm đo lường trên 619 mẫu độc lập thuộc tập `val_clean.csv`:
+Evaluated across 619 independent validation pairs in `val_clean.csv`:
 
-| Kiến trúc mô hình | ROUGE-1 (F1) | ROUGE-2 (F1) | ROUGE-L (F1) | BLEU-4 | Chiều dài TB | Tốc độ suy luận (GPU) |
+| Model Architecture | ROUGE-1 (F1) | ROUGE-2 (F1) | ROUGE-L (F1) | BLEU-4 | Avg Length | GPU Latency |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **VietAI/vit5-base** | 42.85% | 19.34% | 35.12% | 18.72 | 44.6 từ | **28 ms / mẫu** |
-| **vinai/bartpho-syllable** | 45.62% | 21.80% | 38.45% | 21.40 | 47.1 từ | 32 ms / mẫu |
-| **Qwen2-1.5B-Instruct** | 38.10% | 14.50% | 30.25% | 14.15 | 62.4 từ | 180 ms / mẫu |
-| **Hybrid Pipeline (Đề xuất)** | **46.90%** | **22.45%** | **39.80%** | **22.85** | 54.3 từ | 210 ms / mẫu |
+| **VietAI/vit5-base** | 42.85% | 19.34% | 35.12% | 18.72 | 44.6 tokens | **28 ms / item** |
+| **vinai/bartpho-syllable** | 45.62% | 21.80% | 38.45% | 21.40 | 47.1 tokens | 32 ms / item |
+| **Qwen2-1.5B-Instruct** | 38.10% | 14.50% | 30.25% | 14.15 | 62.4 tokens | 180 ms / item |
+| **Hybrid Pipeline (Proposed)** | **46.90%** | **22.45%** | **39.80%** | **22.85** | 54.3 tokens | 210 ms / item |
 
 > [!NOTE]
-> * **BARTpho** vượt trội hơn ViT5 trên toàn bộ thước đo n-gram nhờ cơ chế từ điển âm tiết tiếng Việt (Syllable-level BPE) tương thích tự nhiên với hình thái ngữ âm tiếng Việt.
-> * **Hybrid Pipeline** đạt F1-score cao nhất toàn diện trên cả ROUGE-L (**39.80%**) và BLEU-4 (**22.85**), cân bằng tối ưu giữa độ chính xác thông số và sự uyển chuyển tự nhiên của ngôn ngữ tiếp thị.
+> * **BARTpho** outperforms ViT5 across all n-gram metrics due to its syllable-level BPE tokenizer tailored to Vietnamese morphology.
+> * **The Hybrid Pipeline** achieves superior overall F1 performance on both ROUGE-L (**39.80%**) and BLEU-4 (**22.85**), establishing the optimal trade-off between factual accuracy and natural phrasing.
 
 ---
 
 <a id="case-studies"></a>
-## 🔍 So sánh định tính (Qualitative Case Studies)
+## 🔍 Qualitative Case Studies
 
-| Ngành hàng | Thông tin đầu vào | ViT5-base | Qwen2-1.5B | Hybrid Pipeline (Đề xuất) |
+| Category | Input Metadata | ViT5-base | Qwen2-1.5B | Hybrid Pipeline (Proposed) |
 | :--- | :--- | :--- | :--- | :--- |
-| **Laptop Gaming** | `Laptop Acer Aspire 7 Gaming i5-12450H RTX 2050 16GB 512GB - Giá: 15.990.000` | Laptop Acer Aspire 7 Gaming sở hữu CPU Intel Core i5 kết hợp GPU RTX 2050 đáp ứng nhu cầu học tập và chơi game... | Chiếc laptop Acer Aspire 7 rất mạnh mẽ, thiết kế bắt mắt phù hợp với mọi nhu cầu giải trí đỉnh cao... | Sở hữu thiết kế thanh lịch cùng hiệu năng bứt phá từ Core i5 thế hệ 12 và đồ họa RTX 2050, Acer Aspire 7 Gaming là bạn đồng hành lý tưởng cho cả học tập kỹ thuật và chiến game mượt mà. |
-| **VGA Đồ họa** | `Card màn hình MSI RTX 5070 12G SHADOW 3X OC 12GB - Giá: 22.190.000` | Card màn hình MSI RTX 5070 mang lại hiệu năng đồ họa mạnh mẽ với bộ nhớ 12GB phục vụ chơi game... | Đây là card màn hình MSI RTX 5070 mới nhất giúp bạn chơi mượt mà mọi tựa game đồ họa khủng... | Card màn hình MSI RTX 5070 12GB GDDR7 là giải pháp đồ họa cao cấp, tối ưu hóa toàn diện cho game AAA và các tác vụ dựng hình 3D chuyên nghiệp. |
+| **Gaming Laptop** | `Laptop Acer Aspire 7 Gaming i5-12450H RTX 2050 16GB 512GB - Giá: 15.990.000` | Laptop Acer Aspire 7 Gaming sở hữu CPU Intel Core i5 kết hợp GPU RTX 2050 đáp ứng nhu cầu học tập và chơi game... | Chiếc laptop Acer Aspire 7 rất mạnh mẽ, thiết kế bắt mắt phù hợp với mọi nhu cầu giải trí đỉnh cao... | Sở hữu thiết kế thanh lịch cùng hiệu năng bứt phá từ Core i5 thế hệ 12 và đồ họa RTX 2050, Acer Aspire 7 Gaming là bạn đồng hành lý tưởng cho cả học tập kỹ thuật và chiến game mượt mà. |
+| **Graphics Card** | `Card màn hình MSI RTX 5070 12G SHADOW 3X OC 12GB - Giá: 22.190.000` | Card màn hình MSI RTX 5070 mang lại hiệu năng đồ họa mạnh mẽ với bộ nhớ 12GB phục vụ chơi game... | Đây là card màn hình MSI RTX 5070 mới nhất giúp bạn chơi mượt mà mọi tựa game đồ họa khủng... | Card màn hình MSI RTX 5070 12GB GDDR7 là giải pháp đồ họa cao cấp, tối ưu hóa toàn diện cho game AAA và các tác vụ dựng hình 3D chuyên nghiệp. |
 
 ---
 
-<a id="tai-nguyen"></a>
-## 📦 Trọng số mô hình trên Hugging Face Hub
+<a id="model-hub"></a>
+## 📦 Model Weights on Hugging Face Hub
 
-File trọng số nhị phân `model.safetensors` (**2.1 GB**) cùng toàn bộ tokenizer, cấu hình siêu tham số fine-tune được lưu trữ chính thức tại Hugging Face Model Hub:
+Trained model weights (`model.safetensors`, **2.1 GB**), tokenizers, and configuration files are hosted on Hugging Face Hub:
 
 * **Model Hub**: [🤗 `AnhNguyen195/bartpho-product-description`](https://huggingface.co/AnhNguyen195/bartpho-product-description)
-* **Kiến trúc gốc**: `vinai/bartpho-syllable`
-* **Định dạng trọng số**: Safetensors (Zero-code execution security)
-
-| Tài nguyên | Định dạng | Dung lượng | Nguồn lưu trữ | Link truy cập |
-| :--- | :---: | :---: | :--- | :---: |
-| **BARTpho Product Description** | Safetensors | 2.1 GB | Hugging Face Hub | [🤗 HuggingFace Model](https://huggingface.co/AnhNguyen195/bartpho-product-description) |
+* **Base Model**: `vinai/bartpho-syllable`
+* **Format**: Safetensors
 
 > [!TIP]
-> Bạn có thể tải checkpoint về máy cục bộ qua Hugging Face CLI:
+> Download weights locally via Hugging Face CLI:
 > ```bash
 > pip install -U "huggingface_hub[cli]"
 > huggingface-cli download AnhNguyen195/bartpho-product-description --local-dir bartpho_final_model
@@ -132,39 +130,35 @@ File trọng số nhị phân `model.safetensors` (**2.1 GB**) cùng toàn bộ 
 
 ---
 
-<a id="cai-dat"></a>
-## 🚀 Hướng dẫn cài đặt & Khởi chạy
+<a id="quick-start"></a>
+## 🚀 Quick Start & Inference
 
-### 1. Cài đặt môi trường
+### 1. Environment Setup
 ```bash
 git clone https://github.com/Tuannll/vietnamese-product-description-generation.git
 cd vietnamese-product-description-generation
 
-# Tạo môi trường ảo
+# Create virtual environment
 conda create -n nlg-product python=3.10 -y
 conda activate nlg-product
 
-# Cài đặt thư viện phụ thuộc
+# Install dependencies
 pip install -r requirements.txt
 ```
 
-### 2. Chạy kiểm thử đánh giá định lượng (CI-ready)
-Chạy script tính toán bộ chỉ số ROUGE-1/2/L và BLEU-4 trên tập `val_clean.csv`:
+### 2. Run Benchmark Evaluation (CI-ready)
+Compute ROUGE and BLEU metrics against `val_clean.csv`:
 ```bash
 python evaluate_metrics.py --benchmark
 ```
 
-### 3. Suy luận mô tả sản phẩm (Python Inference)
-Hệ thống hỗ trợ tải trực tiếp trọng số từ Hugging Face Hub (tự động cache) hoặc từ thư mục local:
+### 3. Python Inference
 
 ```python
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-# Cách 1: Tải trực tiếp từ Hugging Face Hub
+# Load directly from Hugging Face Hub or local directory
 model_name = "AnhNguyen195/bartpho-product-description"
-
-# Cách 2: Hoặc dùng đường dẫn cục bộ nếu đã tải về
-# model_name = "./bartpho_final_model"
 
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
@@ -180,11 +174,12 @@ outputs = model.generate(
     early_stopping=True
 )
 
-print("Mô tả sản phẩm:", tokenizer.decode(outputs[0], skip_special_tokens=True))
+print("Generated Copy:", tokenizer.decode(outputs[0], skip_special_tokens=True))
 ```
 
 ---
 
-<a id="dong-gop"></a>
+<a id="license"></a>
 ## 📄 License
-Phát hành theo giấy phép [MIT License](LICENSE).
+
+Distributed under the [MIT License](LICENSE).
